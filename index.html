@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closing the Loop Hack · Studio Zao × ELWA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #000000;
+    --accent: #e42544;
+    --border: #e5e5e5;
+    --muted: #666666;
+    --soft-bg: #f7f7f7;
+    --accumulator: #f59e0b;
+    --replacer: #3b82f6;
+    --keeper: #10b981;
+    --clearer: #8b5cf6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 90px;
+  }
+
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ─── Header / Tabs ─── */
+  header {
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+
+  .brand span {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    padding: 10px 14px;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s ease;
+  }
+
+  .tab-btn:hover { color: var(--text); }
+
+  .tab-btn.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ─── Panel switching ─── */
+  .panel { display: none; padding: 56px 0 40px; }
+  .panel.active { display: block; }
+
+  /* ─── Type scale ─── */
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  h1.hero-title {
+    font-size: clamp(48px, 7vw, 84px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(20px, 2.4vw, 26px);
+    font-weight: 500;
+    color: var(--text);
+    max-width: 760px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .hero-tagline {
+    font-size: 18px;
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .hero-context {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 720px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  h2 {
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+
+  h4 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  p { margin-bottom: 14px; color: #1a1a1a; }
+  p.muted { color: var(--muted); }
+
+  section.block { margin-bottom: 72px; }
+  section.block:last-child { margin-bottom: 0; }
+
+  /* ─── Buttons ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .btn:hover { opacity: 0.92; }
+
+  .btn:disabled,
+  .btn.disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .btn.disabled:hover { opacity: 0.55; }
+
+  /* ─── Stats row ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat .num {
+    font-size: clamp(44px, 5.5vw, 64px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .stat .label {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.45;
+    max-width: 320px;
+  }
+
+  /* ─── Pull quote ─── */
+  .pullquote {
+    font-size: clamp(26px, 3vw, 36px);
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    max-width: 980px;
+    padding: 16px 0;
+  }
+
+  /* ─── Quote block ─── */
+  blockquote {
+    font-style: italic;
+    background: var(--soft-bg);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin: 18px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #222;
+  }
+
+  blockquote cite {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  blockquote cite::before {
+    content: '/ ';
+    font-style: normal;
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 2px;
+  }
+
+  /* ─── Doughnut chart ─── */
+  .persona-doughnut-wrap {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 56px;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .doughnut-holder { position: relative; height: 320px; }
+
+  .persona-legend { display: flex; flex-direction: column; gap: 14px; }
+
+  .legend-row {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 14px;
+    align-items: start;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-top: 5px;
+  }
+
+  .legend-row strong {
+    font-weight: 600;
+    margin-right: 6px;
+  }
+
+  .legend-row .pct {
+    color: var(--muted);
+    margin-right: 6px;
+  }
+
+  .note-small {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* ─── Brief cards on overview ─── */
+  .brief-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .brief-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    text-align: left;
+    font-family: inherit;
+  }
+
+  .brief-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  }
+
+  .brief-card .label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .brief-card .title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+  }
+
+  .brief-card .hmw {
+    font-size: 14px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .brief-card .view-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* ─── Brief tab content ─── */
+  .brief-header {
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .brief-header .label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .brief-header .title {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 28px;
+  }
+
+  .brief-header .hmw {
+    font-size: clamp(20px, 2.3vw, 26px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    color: #1a1a1a;
+    max-width: 980px;
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+  }
+
+  .brief-overview {
+    font-size: 17px;
+    line-height: 1.65;
+    max-width: 880px;
+    color: #1a1a1a;
+  }
+
+  /* ─── Persona cards ─── */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 24px;
+  }
+
+  .persona-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    border-radius: 10px;
+    padding: 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  }
+
+  .persona-card.accumulator { border-left-color: var(--accumulator); }
+  .persona-card.replacer    { border-left-color: var(--replacer); }
+  .persona-card.keeper      { border-left-color: var(--keeper); }
+  .persona-card.clearer     { border-left-color: var(--clearer); }
+
+  .persona-card .role {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .persona-card h3.persona-name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
+  }
+
+  .persona-image {
+    background: var(--soft-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    max-width: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .persona-card h4 {
+    margin-top: 18px;
+  }
+
+  .persona-card p { font-size: 15px; line-height: 1.6; }
+
+  /* persona stat callouts inside card */
+  .persona-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 18px 0;
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .persona-stat {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: baseline;
+  }
+
+  .persona-stat .num {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .persona-card.accumulator .persona-stat .num { color: var(--accumulator); }
+  .persona-card.keeper .persona-stat .num      { color: var(--keeper); }
+  .persona-card.clearer .persona-stat .num     { color: var(--clearer); }
+  .persona-card.replacer .persona-stat .num    { color: var(--replacer); }
+
+  .persona-stat .lbl {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* chart inside persona card */
+  .mini-chart-holder {
+    margin: 22px 0 8px;
+    height: 180px;
+    position: relative;
+  }
+
+  .mini-chart-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* Sub-segment inset */
+  .sub-segment-inset {
+    background: #f3f0ff;
+    border-left: 3px solid var(--clearer);
+    padding: 16px 18px;
+    margin: 18px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #1a1a1a;
+  }
+
+  .sub-segment-inset strong {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--clearer);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* ─── Areas for exploration ─── */
+  .exploration-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 24px;
+  }
+
+  .exploration-card {
+    background: var(--soft-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 28px;
+    font-size: 17px;
+    line-height: 1.5;
+    letter-spacing: -0.005em;
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+
+  .exploration-card .num {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ─── Constraints list ─── */
+  .constraints-list {
+    list-style: none;
+    margin-top: 16px;
+  }
+
+  .constraints-list li {
+    position: relative;
+    padding: 14px 0 14px 28px;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .constraints-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 24px;
+    width: 14px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .constraints-list li:last-child { border-bottom: none; }
+
+  /* ─── Footer ─── */
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    z-index: 40;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    max-width: 1180px;
+    margin: 0 auto;
+    gap: 16px;
+  }
+
+  .footer-brand {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .footer-brand strong { color: var(--text); font-weight: 600; }
+
+  /* Tooltip on disabled CTA */
+  .tooltip-wrap { position: relative; }
+
+  .tooltip-wrap .tip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+  }
+
+  .tooltip-wrap:hover .tip,
+  .tooltip-wrap:focus-within .tip {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 880px) {
+    .container { padding: 0 20px; }
+
+    .header-inner { padding: 14px 0; gap: 10px; }
+
+    nav.tabs { overflow-x: auto; flex-wrap: nowrap; }
+    .tab-btn { padding: 8px 10px; white-space: nowrap; font-size: 13px; }
+
+    .panel { padding: 36px 0 32px; }
+
+    .stats-row { grid-template-columns: 1fr; gap: 28px; padding: 32px 0; }
+
+    .persona-doughnut-wrap {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .doughnut-holder { height: 260px; }
+
+    .brief-cards { grid-template-columns: 1fr; }
+
+    .persona-grid { grid-template-columns: 1fr; }
+
+    .exploration-grid { grid-template-columns: 1fr; }
+
+    .footer-inner { padding: 12px 20px; flex-direction: column; gap: 10px; }
+
+    body { padding-bottom: 140px; }
+
+    .persona-card { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-inner">
+      <div class="brand">Closing the Loop <span>· Studio Zao × ELWA</span></div>
+      <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="overview" role="tab">Overview</button>
+        <button class="tab-btn" data-tab="brief1" role="tab">Brief 1 · Closing the Selling Gap</button>
+        <button class="tab-btn" data-tab="brief2" role="tab">Brief 2 · The Clearout Occasion</button>
+        <button class="tab-btn" data-tab="brief3" role="tab">Brief 3 · Closing the Information Gap</button>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- ════════════════════ OVERVIEW ════════════════════ -->
+<section class="panel active" id="overview" role="tabpanel">
+
+  <!-- Hero -->
+  <section class="block">
+    <div class="eyebrow">Studio Zao × ELWA</div>
+    <h1 class="hero-title">Closing the Loop</h1>
+    <p class="hero-subtitle">Finding a Solution for Textile Waste Prevention through Open Innovation</p>
+    <p class="hero-tagline">A day to fix what awareness campaigns can't.</p>
+    <p class="hero-context">A curated, full-day session bringing together 25 leaders across textiles, retail, and the circular economy to solve three specific, evidence-backed problems in London's clothing disposal system.</p>
+    <div class="tooltip-wrap" style="display:inline-block;">
+      <button class="btn disabled" disabled>Register your interest. Link coming soon</button>
+      <span class="tip">Registration opens soon. Contact studiozao.com for more information.</span>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-row">
+    <div class="stat">
+      <div class="num">20%</div>
+      <div class="label">of London's unwanted clothes end up in general waste</div>
+    </div>
+    <div class="stat">
+      <div class="num">68% <span style="color:var(--muted);font-weight:500;">vs</span> 27%</div>
+      <div class="label">of Londoners buy secondhand. Only 27% sell. The gap is the problem.</div>
+    </div>
+    <div class="stat">
+      <div class="num">12%</div>
+      <div class="label">of Londoners have clothes bagged up and ready to go. They never leave.</div>
+    </div>
+  </section>
+
+  <!-- What we did -->
+  <section class="block" style="margin-top:72px;">
+    <h2>What we did</h2>
+    <p style="font-size:17px;max-width:880px;line-height:1.65;">Studio Zao was commissioned by ELWA and NLWA to go beyond awareness and map exactly how Londoners dispose of unwanted clothing and where the system fails them. We surveyed 1,014 Londoners, conducted in-depth interviews, and consulted major organisations across the sector. The result: four behavioural personas, a systemic friction map, and three challenge briefs.</p>
+  </section>
+
+  <!-- Headline finding -->
+  <section class="block">
+    <h4>Headline finding</h4>
+    <p class="pullquote">"Londoners aren't binning clothes because they don't care. They're binning them because the system has made every other route harder than the bin."</p>
+  </section>
+
+  <!-- Personas chart -->
+  <section class="block">
+    <h2>Four behavioural personas</h2>
+    <p class="muted" style="max-width:760px;">Built from 1,014 survey responses and weighted against London demographics.</p>
+
+    <div class="persona-doughnut-wrap">
+      <div class="doughnut-holder">
+        <canvas id="personaDoughnut"></canvas>
+      </div>
+      <div class="persona-legend">
+        <div class="legend-row">
+          <div class="legend-swatch" style="background:var(--accumulator);"></div>
+          <div><strong>The Accumulator</strong><span class="pct"> · 17.5% · </span>Buys frequently, holds onto clothes, struggles to act on disposal intent</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatch" style="background:var(--replacer);"></div>
+          <div><strong>The Pragmatic Replacer</strong><span class="pct"> · 41.8% · </span>Replaces clothes when worn out. Not values-driven, not trend-driven.</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatch" style="background:var(--keeper);"></div>
+          <div><strong>The Ethical Keeper</strong><span class="pct"> · 12.7% · </span>Environmentally motivated and fairly circular, but held back by institutional distrust</div>
+        </div>
+        <div class="legend-row">
+          <div class="legend-swatch" style="background:var(--clearer);"></div>
+          <div><strong>The Seasonal Clearer</strong><span class="pct"> · 28.0% · </span>Disposes in large batches when triggered. Right mindset, wrong frequency.</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="note-small">The hack focuses on The Accumulator, The Ethical Keeper, and The Seasonal Clearer. These are the three personas with the greatest capacity for behaviour change.</p>
+  </section>
+
+  <!-- The hack -->
+  <section class="block">
+    <h2>One day. Three problems. Real solutions.</h2>
+    <p style="font-size:17px;max-width:880px;line-height:1.65;">This is the culmination of the ELWA/NLWA venture-building project. We have done the research. Now we need the room. On hack day, 25 invited leaders will work in three focused working groups, one per brief, to develop viable, stress-tested concepts. The goal is not a polished deck. It is a set of ideas with real commitments to build business cases and take them forward.</p>
+  </section>
+
+  <!-- Brief cards -->
+  <section class="block">
+    <h2>The three briefs</h2>
+    <div class="brief-cards">
+      <button class="brief-card" data-target="brief1">
+        <div class="label">Brief 01</div>
+        <div class="title">Closing the Selling Gap</div>
+        <div class="hmw">How might we make disposing of a garment circularly as low-effort as buying one, without forcing people to become sellers?</div>
+        <div class="view-link">View brief →</div>
+      </button>
+      <button class="brief-card" data-target="brief2">
+        <div class="label">Brief 02</div>
+        <div class="title">The Clearout Occasion</div>
+        <div class="hmw">How might we create clear-out occasions that trigger action for people who tend to dispose in large batches only when something prompts them?</div>
+        <div class="view-link">View brief →</div>
+      </button>
+      <button class="brief-card" data-target="brief3">
+        <div class="label">Brief 03</div>
+        <div class="title">Closing the Information Gap</div>
+        <div class="hmw">How might we give people quick, trustworthy confidence that their unwanted garments are worth doing something with, before questions of where they should go even arise?</div>
+        <div class="view-link">View brief →</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Why now -->
+  <section class="block">
+    <h2>Why this, why now</h2>
+    <p style="font-size:17px;max-width:880px;line-height:1.65;">These problems are not solved by better awareness campaigns or more app features. They are structural and they need cross-sector thinking. If you are working in this space and have been frustrated by how slowly things move, this is a day designed to move them.</p>
+  </section>
+
+</section>
+
+
+<!-- ════════════════════ BRIEF 1 ════════════════════ -->
+<section class="panel" id="brief1" role="tabpanel">
+
+  <div class="brief-header">
+    <div class="label">Brief 01</div>
+    <div class="title">Closing the Selling Gap</div>
+    <p class="hmw"><em>How might we make disposing of a garment circularly as low-effort as buying one, without forcing people to become sellers?</em></p>
+  </div>
+
+  <section class="block">
+    <h4>Brief overview</h4>
+    <p class="brief-overview">Most Londoners who want to dispose of clothes circularly face a basic asymmetry: buying is frictionless, but selling, donating, or passing on a garment takes effort, knowledge, and time. The result is a growing pile of clothes that never move. This brief asks what it would take to close that gap, without requiring people to become resellers.</p>
+  </section>
+
+  <section class="block">
+    <h4>Personas in focus</h4>
+    <div class="persona-grid">
+
+      <!-- Accumulator -->
+      <article class="persona-card accumulator">
+        <div class="role">Primary persona</div>
+        <h3 class="persona-name">The Accumulator</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a young London woman, mid-20s, fashion-forward, surrounded by overflowing clothes rails and bags of clothing in a bright London flat. Warm, editorial tone. Not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Accumulator is London's most fashion-engaged persona. They buy frequently across multiple channels and build up wardrobes faster than they clear them. They are not indifferent to sustainability, many actively want to dispose of clothes responsibly. The problem is that the effort required to do so consistently outweighs the perceived reward. Clothes pile up in bags that never move.</p>
+
+        <h4>Why this persona for this brief</h4>
+        <p>The Accumulator's problem is structural, not motivational. They have the intent. They lack a route that matches the ease of buying. 96.6% are responsive to peer and tech-based interventions, making them highly reachable through digital channels. They already buy secondhand at high rates, but the reverse flow, selling or passing on, stalls at the effort barrier.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">17.5%</div><div class="lbl">of London (n=177)</div></div>
+          <div class="persona-stat"><div class="num">96.6%</div><div class="lbl">responsive to peer and tech interventions</div></div>
+          <div class="persona-stat"><div class="num">27%</div><div class="lbl">general waste rate</div></div>
+        </div>
+
+        <div class="mini-chart-holder">
+          <canvas id="chartB1Accumulator"></canvas>
+        </div>
+        <p class="mini-chart-label">The acquisition gap, Accumulator profile</p>
+
+        <blockquote>
+          "I never really throw my clothes away before."
+          <cite>Momo, The Accumulator</cite>
+        </blockquote>
+      </article>
+
+      <!-- Ethical Keeper -->
+      <article class="persona-card keeper">
+        <div class="role">Secondary persona</div>
+        <h3 class="persona-name">The Ethical Keeper</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a woman in her late 20s, London, thoughtful expression, minimal wardrobe in background, second-hand or vintage clothing aesthetic. Natural light, editorial feel. Not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Ethical Keeper is the most values-aligned persona in the research. They are environmentally motivated, deliberate about what they buy, and already using circular routes like Vinted and charity shops. But there is a hidden tension: they buy secondhand at high rates while selling at much lower rates, and many feel a quiet distrust of institutional donation routes. The gap between their values and their actions is a trust and friction problem, not a motivation problem.</p>
+
+        <h4>Why this persona for this brief</h4>
+        <p>The Ethical Keeper's barrier is specifically about the destination, not the effort. The feeling of giving something to an institution with no visibility of where it goes or who benefits is enough to stall action. A solution that makes the recipient visible or the route transparent directly addresses this. They are 100% responsive to values-based framing, but that framing must be honest and specific, not performative.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">12.7%</div><div class="lbl">of London (n=129)</div></div>
+          <div class="persona-stat"><div class="num">100%</div><div class="lbl">responsive to values-based interventions</div></div>
+          <div class="persona-stat"><div class="num">13%</div><div class="lbl">general waste rate (lowest of all personas)</div></div>
+        </div>
+
+        <blockquote>
+          "I just feel like I'm giving it to an establishment."
+          <cite>Lizzie, The Ethical Keeper</cite>
+        </blockquote>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Areas for exploration</h4>
+    <div class="exploration-grid">
+      <div class="exploration-card"><span class="num">01</span>What if the effort to list a garment could be collapsed to a single photograph, automatically valued and routed?</div>
+      <div class="exploration-card"><span class="num">02</span>What if routing-on happened at the moment of purchase, a forward-disposal decision made when buying, not when clearing?</div>
+      <div class="exploration-card"><span class="num">03</span>What if the person receiving the garment was visible to the person giving it, closing the anonymity gap that makes charity feel abstract?</div>
+      <div class="exploration-card"><span class="num">04</span>What if the identity of seller was removed entirely and replaced with something more like passing it on?</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Design constraints</h4>
+    <ul class="constraints-list">
+      <li>Must serve the post-acquisition moment (the bag that does not move), not the acquisition moment.</li>
+      <li>Do not lead with identity or values framing.</li>
+      <li>Design for circular flow, not platform churn.</li>
+    </ul>
+  </section>
+
+</section>
+
+
+<!-- ════════════════════ BRIEF 2 ════════════════════ -->
+<section class="panel" id="brief2" role="tabpanel">
+
+  <div class="brief-header">
+    <div class="label">Brief 02</div>
+    <div class="title">The Clearout Occasion</div>
+    <p class="hmw"><em>How might we create clear-out occasions that trigger action for people who tend to dispose in large batches only when something prompts them?</em></p>
+  </div>
+
+  <section class="block">
+    <h4>Brief overview</h4>
+    <p class="brief-overview">Some Londoners do not have a disposal problem. They have a trigger problem. When they do clear out, they do it well: large batches, mostly circular routes, low waste rates. But without an external prompt, the clearout never happens. This brief is about creating the occasion, the moment, the infrastructure, the social context, that converts intent into action.</p>
+  </section>
+
+  <section class="block">
+    <h4>Personas in focus</h4>
+    <div class="persona-grid">
+
+      <!-- Seasonal Clearer -->
+      <article class="persona-card clearer">
+        <div class="role">Primary persona</div>
+        <h3 class="persona-name">The Seasonal Clearer</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a woman in her mid-30s, London, practical and warm, standing near neatly folded bags of clothes ready to donate. Bright domestic setting, natural light. Editorial, not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Seasonal Clearer is one of London's most circular personas when they act. They dispose of clothes in large batches, mostly through charity shops, collection banks, and friends-and-family networks. Their general waste rate is just 8%, the lowest of all four groups. The problem is not their values or their routes. It is frequency: without a clear external trigger, the clearout does not happen, and bags of clothes sit packed but unmoved for months.</p>
+
+        <div class="sub-segment-inset">
+          <strong>A note on sub-segments</strong>
+          Within the Seasonal Clearer group, the most promising target for this brief is the frenetic reactive sub-segment (roughly 25% of Seasonal Clearers, n=73). These are people who want to clear out but are waiting for the right moment. They are the most responsive to habit-building and external triggers, and most likely to act if the occasion is made easy.
+        </div>
+
+        <h4>Why this persona for this brief</h4>
+        <p>The Seasonal Clearer is the primary target because their problem is exactly what this brief addresses: not a values gap, not a knowledge gap, but an occasion gap. 92.3% are responsive to habit-building interventions. The infrastructure to capture their clothes already exists. What is missing is the trigger that gets the bags out of the hallway.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">28%</div><div class="lbl">of London (n=284)</div></div>
+          <div class="persona-stat"><div class="num">8%</div><div class="lbl">general waste rate (lowest of all personas)</div></div>
+          <div class="persona-stat"><div class="num">92.3%</div><div class="lbl">responsive to habit-building interventions</div></div>
+        </div>
+
+        <div class="mini-chart-holder">
+          <canvas id="chartB2Waste"></canvas>
+        </div>
+        <p class="mini-chart-label">General waste rate by persona</p>
+
+        <blockquote>
+          "It would be better if we have more than boxes."
+          <cite>Maryna, The Seasonal Clearer</cite>
+        </blockquote>
+
+        <blockquote>
+          "I feel kind of shy going to the charity shop to donate."
+          <cite>Karima, The Seasonal Clearer</cite>
+        </blockquote>
+      </article>
+
+      <!-- Ethical Keeper -->
+      <article class="persona-card keeper">
+        <div class="role">Secondary persona</div>
+        <h3 class="persona-name">The Ethical Keeper</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a woman in her late 20s, London, thoughtful expression, minimal wardrobe in background, second-hand or vintage clothing aesthetic. Natural light, editorial feel. Not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Ethical Keeper is environmentally motivated and already fairly circular in their behaviour, using charity shops, Vinted, and community routes. They share one key trait with the Seasonal Clearer: they need the destination to feel trustworthy and transparent before they will act. They do not clear out in large batches, but when a clearout occasion is well-designed with visible, credible destinations, they are highly likely to participate.</p>
+
+        <h4>Why this persona for this brief</h4>
+        <p>The Ethical Keeper responds strongly to occasion-based prompts when those occasions include destination transparency. 95.3% are responsive to habit-building and peer/social interventions. The design requirement is clear: they need to know where their clothes are going. A clearout occasion that answers that question will capture this group.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">12.7%</div><div class="lbl">of London (n=129)</div></div>
+          <div class="persona-stat"><div class="num">95.3%</div><div class="lbl">responsive to habit-building and peer/social interventions</div></div>
+          <div class="persona-stat"><div class="num">↑</div><div class="lbl">Buys secondhand at significantly higher rates than they sell</div></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Areas for exploration</h4>
+    <div class="exploration-grid">
+      <div class="exploration-card"><span class="num">01</span>What if the clearout trigger was external and calendared, not a crisis, but a recurring neighbourhood moment?</div>
+      <div class="exploration-card"><span class="num">02</span>What if the question was never where do I take this, but how much is this worth, value as the hook, logistics as the answer?</div>
+      <div class="exploration-card"><span class="num">03</span>What if the clearout was social, a shared occasion that turns the private guilt of accumulation into a collective act?</div>
+      <div class="exploration-card"><span class="num">04</span>What if collection came to the person, rather than requiring a separate trip?</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Design constraints</h4>
+    <ul class="constraints-list">
+      <li>The Seasonal Clearer needs occasion infrastructure, not messaging.</li>
+      <li>The Ethical Keeper needs destination transparency, not frequency prompts.</li>
+      <li>Same brief, two mechanisms. Design for modularity.</li>
+      <li>Physical and civic infrastructure is a design consideration, not a constraint.</li>
+    </ul>
+  </section>
+
+</section>
+
+
+<!-- ════════════════════ BRIEF 3 ════════════════════ -->
+<section class="panel" id="brief3" role="tabpanel">
+
+  <div class="brief-header">
+    <div class="label">Brief 03</div>
+    <div class="title">Closing the Information Gap</div>
+    <p class="hmw"><em>How might we give people quick, trustworthy confidence that their unwanted garments are worth doing something with, before questions of where they should go even arise?</em></p>
+  </div>
+
+  <section class="block">
+    <h4>Brief overview</h4>
+    <p class="brief-overview">Before someone can decide where to send a garment, they need to believe it is worth sending at all. A significant share of Londoners self-exclude from circular routes not because they do not care, but because they assume their clothes are not good enough to donate, sell, or recycle. This brief targets that moment of self-doubt: the point where a garment gets binned not because there is no route, but because the person never believed there was one.</p>
+  </section>
+
+  <section class="block">
+    <h4>Personas in focus</h4>
+    <div class="persona-grid">
+
+      <!-- Accumulator co-primary -->
+      <article class="persona-card accumulator">
+        <div class="role">Co-primary persona</div>
+        <h3 class="persona-name">The Accumulator</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a woman in her early 30s, London, stylish but slightly overwhelmed, standing in front of a wardrobe with too many clothes. Warm tones, editorial feel. Not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Accumulator buys frequently and builds up wardrobes faster than they clear them. When they do try to dispose of clothes circularly, a key barrier is condition confidence: they are unsure whether their items are good enough to donate or sell, and that uncertainty tips the decision toward the bin. They are not lazy. They are stuck at the assessment step, before any routing decision is even possible.</p>
+
+        <h4>Why this persona for this brief</h4>
+        <p>71.8% of Accumulators face an information barrier at the disposal moment, specifically around condition and route. They have the volume and the intent, but they stall at the question: is this actually worth doing something with? A solution that answers that question quickly and credibly, before the bin becomes the default, directly unlocks this group.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">71.8%</div><div class="lbl">face an information barrier at disposal</div></div>
+          <div class="persona-stat"><div class="num">34%</div><div class="lbl">cite quality concern as their primary disposal barrier</div></div>
+          <div class="persona-stat"><div class="num">17.5%</div><div class="lbl">of London (n=177)</div></div>
+        </div>
+
+        <div class="mini-chart-holder" style="height:220px;">
+          <canvas id="chartB3Info"></canvas>
+        </div>
+        <p class="mini-chart-label">Share facing an information barrier at the disposal moment, by persona</p>
+
+        <blockquote>
+          "I'm a big, maybe too big of a shopper."
+          <cite>Chiara, The Accumulator</cite>
+        </blockquote>
+      </article>
+
+      <!-- Ethical Keeper co-primary -->
+      <article class="persona-card keeper">
+        <div class="role">Co-primary persona</div>
+        <h3 class="persona-name">The Ethical Keeper</h3>
+
+        <!-- Gemini image prompt: Realistic portrait of a woman in her late 20s, London, holding a garment and looking uncertain. Minimal, natural setting. Warm light, editorial feel. Not a stock photo. -->
+        <div class="persona-image">AI-generated persona image</div>
+
+        <p>The Ethical Keeper cares deeply about where their clothes go, which is precisely why the information gap hits them hard. They will not donate to a route they do not trust, and they will not sell through a channel that feels opaque. Their high standards for destination transparency mean that vague or unverifiable claims about where clothes end up are enough to stop them acting entirely.</p>
+
+        <h4>Why this persona for this brief</h4>
+        <p>54.3% of Ethical Keepers face an information barrier at disposal. For this group the barrier is not about condition, it is about trust. They need to know that their garment will be used, not landfilled or exported. A solution that provides specific, verifiable destination information at the point of disposal will convert this group at high rates. They are already motivated. They just need the evidence.</p>
+
+        <div class="persona-stats">
+          <div class="persona-stat"><div class="num">54.3%</div><div class="lbl">face an information barrier at disposal</div></div>
+          <div class="persona-stat"><div class="num">12.7%</div><div class="lbl">of London (n=129)</div></div>
+          <div class="persona-stat"><div class="num">100%</div><div class="lbl">responsive to values-based interventions, but only when the evidence is credible</div></div>
+        </div>
+
+        <blockquote>
+          "Trust has been eroded. Consumers do care but they don't believe."
+          <cite>Mo, UKFT (sector stakeholder)</cite>
+        </blockquote>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Areas for exploration</h4>
+    <div class="exploration-grid">
+      <div class="exploration-card"><span class="num">01</span>What if someone could know in seconds whether a garment was worth donating, selling, or recycling, and where the right place was?</div>
+      <div class="exploration-card"><span class="num">02</span>What if the transparency of the destination changed the decision, seeing who receives it, what they pay for it, what happens next?</div>
+      <div class="exploration-card"><span class="num">03</span>What if the value of an unworn wardrobe was made visible, not as a guilt trip, but as a genuine financial and environmental asset?</div>
+      <div class="exploration-card"><span class="num">04</span>What if pre-sorting happened at the consumer end, shifting the quality-assessment burden upstream before the garment reaches a charity or processor?</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h4>Design constraints</h4>
+    <ul class="constraints-list">
+      <li>Information alone does not change behaviour. The sector has tried leaflets and they failed.</li>
+      <li>Any solution must collapse the gap between knowing and doing.</li>
+      <li>The business model must depend on volume of garments moved, not volume of information produced.</li>
+      <li>TRAID and Oxfam confirm that quality anxiety drives self-exclusion. Donors throw away rather than donate because they assume the item will not be wanted. The gap is perception, not reality.</li>
+    </ul>
+  </section>
+
+</section>
+
+</main>
+
+<!-- ════════════════════ FOOTER ════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><strong>Studio Zao × ELWA</strong> / Closing the Loop</div>
+    <div class="tooltip-wrap">
+      <button class="btn disabled" disabled>Register your interest. Link coming soon</button>
+      <span class="tip">Registration opens soon. Contact studiozao.com for more information.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ─── Tab switching ───
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels  = document.querySelectorAll('.panel');
+
+  function switchTab(target) {
+    tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === target));
+    panels.forEach(p => p.classList.toggle('active', p.id === target));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  document.querySelectorAll('.brief-card').forEach(card => {
+    card.addEventListener('click', () => switchTab(card.dataset.target));
+  });
+
+  // ─── Chart.js defaults ───
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = '#1a1a1a';
+
+  // ─── Overview: doughnut ───
+  new Chart(document.getElementById('personaDoughnut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['The Pragmatic Replacer', 'The Seasonal Clearer', 'The Accumulator', 'The Ethical Keeper'],
+      datasets: [{
+        data: [41.8, 28.0, 17.5, 12.7],
+        backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981'],
+        borderColor: '#ffffff',
+        borderWidth: 3,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#000',
+          padding: 10,
+          callbacks: {
+            label: ctx => ` ${ctx.label}: ${ctx.parsed}%`
+          }
+        }
+      }
+    }
+  });
+
+  // ─── Brief 1: Accumulator buy vs sell ───
+  new Chart(document.getElementById('chartB1Accumulator'), {
+    type: 'bar',
+    data: {
+      labels: ['Buys secondhand', 'Sells secondhand'],
+      datasets: [{
+        data: [68, 27],
+        backgroundColor: ['rgba(245,158,11,0.95)', 'rgba(245,158,11,0.45)'],
+        borderRadius: 4,
+        barThickness: 28
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#000',
+          callbacks: { label: ctx => ` ${ctx.parsed.x}%` }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 100,
+          grid: { color: '#eee', drawBorder: false },
+          ticks: { callback: v => v + '%', color: '#666' }
+        },
+        y: { grid: { display: false }, ticks: { color: '#000', font: { weight: '600' } } }
+      }
+    }
+  });
+
+  // ─── Brief 2: General waste rate by persona ───
+  new Chart(document.getElementById('chartB2Waste'), {
+    type: 'bar',
+    data: {
+      labels: ['The Accumulator', 'The Pragmatic Replacer', 'The Ethical Keeper', 'The Seasonal Clearer'],
+      datasets: [{
+        data: [27, 27, 13, 8],
+        backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6'],
+        borderRadius: 4,
+        barThickness: 22
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#000',
+          callbacks: { label: ctx => ` ${ctx.parsed.x}%` }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 35,
+          grid: { color: '#eee', drawBorder: false },
+          ticks: { callback: v => v + '%', color: '#666' }
+        },
+        y: { grid: { display: false }, ticks: { color: '#000', font: { weight: '500' } } }
+      }
+    }
+  });
+
+  // ─── Brief 3: Information barrier rate by persona ───
+  new Chart(document.getElementById('chartB3Info'), {
+    type: 'bar',
+    data: {
+      labels: ['The Accumulator', 'The Ethical Keeper', 'The Pragmatic Replacer', 'The Seasonal Clearer'],
+      datasets: [{
+        data: [71.8, 54.3, 49.5, 41.5],
+        backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'],
+        borderRadius: 4,
+        barThickness: 22
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#000',
+          callbacks: { label: ctx => ` ${ctx.parsed.x}%` }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 100,
+          grid: { color: '#eee', drawBorder: false },
+          ticks: { callback: v => v + '%', color: '#666' }
+        },
+        y: { grid: { display: false }, ticks: { color: '#000', font: { weight: '500' } } }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
